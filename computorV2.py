@@ -10,4 +10,3 @@ while 1:
     if input == 'quit' or input == 'q' or input == 'exit':
         sys.exit()
     parsing(input)
-# faire un résumé des differents cas a traité.

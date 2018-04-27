@@ -72,27 +72,63 @@ def shunting_yard(input):
 def parse_all(input):
     function_regex = re.compile('^[a-z]+\(')
     index = 0
-    parse_info = {'nbr': True, 'assign': None, 'equal': False, 'assign_func': False}
+    parse_info = {'nbr': True, 'assign': None, 'equal': False, 'assign_func': False, "error": False}
     if not input.endswith('?'):
         parse_info['assign'] = True
     while index < len(input):
         if re.match(function_regex, input[index:]):
-            if parse_info['nbr'] == False:
-                print('Erreur: Excepected Number or variable')
-            if index == 0 and parse_info['assign']:
+            if not parse_info['nbr']:
+                print('Erreur: Excepected Operator')
+                parse_info['error'] = True
+                return parse_info
+            if index == 0 and parse_info['assign'] is not None:
                 tmp = extract_function(input, 0)
                 index += len(tmp)
                 parse_info['assign_func'] = tmp
-            else
-        if input[index] == 'i':
-            index += 1
-            parse_info['nbr'] = False
+                parse_info['nbr'] = False
+            else:
+                index += len(extract_function(input, index))
+                parse_info['nbr'] = False
         elif input[index].isalpha():
-            return 1
+            tmp = extract_var(input, index)
+            if tmp == "i" or tmp == 'x':
+                index += 1
+                parse_info['nbr'] = False
+            elif not parse_info['nbr']:
+                print('Erreur: Excepected Operator')
+                parse_info['error'] = True
+                return parse_info
+            elif index == 0 and parse_info['assign'] is not None:
+                parse_info['nbr'] = False
+                parse_info['assign'] = tmp
+                index += len(tmp)
+            else:
+                parse_info['nbr'] = False
+                index += len(tmp)
+        #ismatrice
+        elif input[index].isdigit():
+            if not parse_info['nbr']:
+                print('Erreur: Excepected Operator')
+                parse_info['error'] = True
+                return parse_info
+            else:
+                parse_info['nbr'] = False
+                index += len(extract_nbr(input, index))
+        elif re.match(r'[+\-*/^%]', input[index]):#egal too
+            if parse_info['nbr']:
+                print('Erreur: Excepected Number or variable')
+                parse_info['error'] = True
+                return parse_info
+            else:
+                index += 1
+                parse_info['nbr'] = True
+        else:
+            index +=1
+    return parse_info
 
 
 def parsing(input):
-    parse_all(input)
+    print(parse_all(input))
 
 
 

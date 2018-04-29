@@ -41,8 +41,8 @@ def to_tab(input):
                 nbr = False
             elif extract_var(input[index:]):
                 tmp = extract_var(input[index:])
-                token_list.append(tmp)
-                index += len([2, tmp])
+                token_list.append([2, tmp])
+                index += len(tmp)
                 nbr = False
             elif extract_nbr(input[index:]):
                 tmp = extract_nbr(input[index:])
@@ -69,13 +69,19 @@ def to_tab(input):
 
 
 def greater_precedence(operator1, operator2):
+    if operator2 == '(':
+        return False
     if operator1 == '^':
         return False
+    if operator1 == '*' and operator2 == '/':
+        return True
     if operator1 == '*' or operator1 == '/' or operator1 == '%':
         if operator2 == '^':
             return True
         else:
             return False
+    if operator1 == '+' and operator2 == '-':
+        return True
     if operator1 == '-' or operator1 == '+':
         if operator2 == '-' or operator2 == '+':
             return False
@@ -96,12 +102,13 @@ def shunting_yard(tokens):
                 output.append(operator.pop())
                 op_index -= 1
             operator.append(tokens[index][1])
-        elif  tokens[index][0] == '(':
+        elif tokens[index][0] == 4:
             operator.append('(')
-        elif tokens[index][0] == ')':
+        elif tokens[index][0] == 5:
             op_index = len(operator) - 1
             while len(operator) and operator[op_index] != '(':
                 output.append(operator.pop())
+                op_index -= 1
             if not len(operator):
                 print("Error parenthesage")
             else:

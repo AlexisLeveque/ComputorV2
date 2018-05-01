@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import re
-from type import parsing
+from resolve import parsing
+
 
 while 1:
     input = raw_input('> ')

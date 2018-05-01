@@ -53,7 +53,8 @@ def to_tab(input):
                 token_list.append([4, '('])
                 index += 1
             else:
-                print "can't recognize token near %s" % input[index-3:index+2]
+                print "can't recognize token near %s" % input[index-3 if index-3 >= 0 else 0:index+2]
+                return "error"
         else:
             match = re.match(r'[+\-*/^%=]', input[index])
             if match is not None:
@@ -63,84 +64,29 @@ def to_tab(input):
             elif input[index] == ')':
                 token_list.append([5, ')'])
                 index += 1
+            elif input[index] == 'i':
+                token_list.append([0, '*'])
+                token_list.append([2, 'i'])
+                index += 1
+                nbr = False
             else:
-                print "can't recognize token near %s" % input[index-3:index+2]
+                print "can't recognize token near %s" % input[index-3 if index-3 >= 0 else 0:index+2]
+                return "error"
+    print('token_list')
+    print(token_list)
     return token_list
-
-
-def greater_precedence(operator1, operator2):
-    if operator2 == '(':
-        return False
-    if operator1 == '^':
-        return False
-    if operator1 == '*' and operator2 == '/':
-        return True
-    if operator1 == '*' or operator1 == '/' or operator1 == '%':
-        if operator2 == '^':
-            return True
-        else:
-            return False
-    if operator1 == '+' and operator2 == '-':
-        return True
-    if operator1 == '-' or operator1 == '+':
-        if operator2 == '-' or operator2 == '+':
-            return False
-        else:
-            return True
-
-
-def shunting_yard(tokens):
-    operator = []
-    output = []
-    index = 0
-    while index < len(tokens):
-        if 4 > tokens[index][0] > 0:
-            output.append(tokens[index][1])
-        elif tokens[index][0] == 0:
-            op_index = len(operator)-1
-            while len(operator) and greater_precedence(tokens[index][1], operator[op_index]):
-                output.append(operator.pop())
-                op_index -= 1
-            operator.append(tokens[index][1])
-        elif tokens[index][0] == 4:
-            operator.append('(')
-        elif tokens[index][0] == 5:
-            op_index = len(operator) - 1
-            while len(operator) and operator[op_index] != '(':
-                output.append(operator.pop())
-                op_index -= 1
-            if not len(operator):
-                print("Error parenthesage")
-            else:
-                operator.pop()
-        index += 1
-    while len(operator):
-        output.append(operator.pop())
-    return output
-
-
-def resolve(input):
-    print('there')
-    if re.match(r'^[a-z]+=', input):
-        var = extract_var(input)
-        input = re.sub(r'^[a-z]+=', '', input).lower()
-        token_list = to_tab(input)
-        print(token_list)
-    elif input.endswith("=?"):
-        is_result_calc = True
-        print('here')
-        token_list = to_tab(input[:-2])
-        print shunting_yard(token_list)
-    else:
-        return 'problem'
 
 
 def parse(input):
     function_regex = re.compile('^[a-z]+\(')
     parse_info = {'assign': False, 'assign_func': False, 'resolve_equat': False, 'error': False}
+    if not input:
+        parse_info['error'] = True
+        print('Error: Empty input')
+        return parse_info
     if not input.endswith('?'):
         parse_info['assign'] = True
-        if re.match(function_regex, input[0]):
+        if re.match(function_regex, input):
             tmp = extract_function(input)
             parse_info['assign_func'] = tmp
             if input[len(tmp)] != "=":
@@ -163,19 +109,7 @@ def parse(input):
     return parse_info
 
 
-def parsing(input):
-    parse_info = parse(input)
-    if parse_info['error'] == True:
-        return "Error"
 
-    # if parse_info['assign_func']:
-    #     resolve_func()
-    # elif parse_info['assign']:
-    #     assign_resolve()
-    # elif parse_info['resolve_equat']:
-    #     resolve_equat()
-    # else:
-    resolve(input)
 
 
 

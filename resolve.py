@@ -4,6 +4,19 @@ from parse import to_tab, extract_var, extract_nbr, extract_function, parse
 
 variables = {"rationel": {}, "complexe": {}, "matrices": {}}
 
+
+def npi_solver(input):
+    index = 0
+    while len(input) > 1:
+        if re.match(r'[+\-*/^%=]', input[index]):
+            res = calc(input[index-2], input[index-1], input[index], input)
+            input[index] = res
+            input.pop(index - 1)
+            input.pop(index - 2)
+            index = 0
+        index += 1
+
+
 def greater_precedence(operator1, operator2):
     if operator2 == '(':
         return False
@@ -75,7 +88,7 @@ def resolve_equat(input):
 
 
 def resolve_func(input, parse_info):
-    return 0#appeller mon (second degrée auquel il faut rajouter les (8X)
+    return 0#appeller mon second degrée auquel il faut rajouter les (8X)
 
 
 def assign_resolve(input, parse_info):

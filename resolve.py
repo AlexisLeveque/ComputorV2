@@ -83,12 +83,13 @@ def resolve(input):
 
 
 def resolve_equat(input):
-    return 0#parse equation and enter it
+
+    return 0#appeller mon second degrée auquel il faut rajouter les (8X)
 
 
 
 def resolve_func(input, parse_info):
-    return 0#appeller mon second degrée auquel il faut rajouter les (8X)
+    return 0#parse equation and enter it
 
 
 def assign_resolve(input, parse_info):

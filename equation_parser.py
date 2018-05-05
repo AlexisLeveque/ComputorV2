@@ -2,7 +2,6 @@ def add_to_tab(expr,  inverse):
 
 
 
-
 def move_to_the_same_side(expr):
     tab = []
     inverse = False

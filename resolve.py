@@ -1,8 +1,51 @@
 # -*- coding: utf-8 -*-
 import re
 from parse import to_tab, extract_var, extract_nbr, extract_function, parse
+from type import Complex, Rationels
 
 variables = {"rationel": {}, "complexe": {}, "matrices": {}}
+
+
+def recup_var(var):
+    if var in variables["rationel"]:
+        return variables["rationel"][var]
+    elif var in variables["complexe"]:
+        return variables["complexe"][var]
+    elif var in variables["matrices"]:
+        return variables["matrices"][var]
+    else:
+        print("Error")
+
+
+def type(nbr):
+    function_regex = re.compile('^[a-z]+\(')
+    nbr_regex = re.compile('^\-?[0-9]+(\.[0-9]+)?')
+    if nbr == 'i':
+        nbr = Complex(0, 1)
+    elif re.match(function_regex, nbr):
+        nbr = resolve_func(nbr)
+    elif nbr.isalpha():
+        nbr = recup_var(nbr)
+    elif re.match(nbr_regex, nbr):
+        nbr = Rationels(int(nbr))
+    return nbr
+
+
+def calc(nbr1, nbr2, operator, input):
+    nbr1 = type(nbr1)
+    nbr2 = type(nbr2)
+    if operator == '+':
+        return nbr1.add(nbr2)
+    elif operator == '-':
+        return nbr1.sous(nbr2)
+    elif operator == '*':
+        return nbr1.mult(nbr2)
+    elif operator == '/':
+        return nbr1.div(nbr2)
+    elif operator == '%':
+        return nbr1.mod(nbr2)
+    elif operator == '^':
+        return nbr1.pow(nbr2)
 
 
 def npi_solver(input):

@@ -56,10 +56,10 @@ def to_tab(input):
                 print "can't recognize token near %s" % input[index-3 if index-3 >= 0 else 0:index+2]
                 return "error"
         else:
-            match = re.match(r'[+\-*/^%=]', input[index])
+            match = re.match(r'\*\*|[\-+/^%=*]', input[index])
             if match is not None:
                 token_list.append([0, match.group(0)])
-                index += 1
+                index += len(match.group(0))
                 nbr = True
             elif input[index] == ')':
                 token_list.append([5, ')'])

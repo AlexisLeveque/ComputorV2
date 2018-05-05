@@ -2,11 +2,19 @@ import re
 import random
 
 
-str = "my_str_ez"
-input = 10
-l = [10, 12, 14, 16]
-index = 2
-l[index] = 20
-l.pop(index-1)
-l.pop(index-2)
-print(l)
+variables = {"rationel": {"a": 25, "po": 12}, "complexe": {"tagada": "pilou"}, "matrices": {}}
+
+class Rationels:
+    def __init__(self, nbr):
+        self.nbr = nbr
+        self.is_positif = True if nbr >= 0 else False
+
+
+nbr = Rationels(23)
+
+print(type(nbr, Rationels))
+if "a" in variables["rationel"]:
+    print("Ok")
+
+if "b" in variables["rationel"]:
+    print("Not Ok")

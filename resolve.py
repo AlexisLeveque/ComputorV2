@@ -20,6 +20,8 @@ def recup_var(var):
 def type(nbr):
     function_regex = re.compile('^[a-z]+\(')
     nbr_regex = re.compile('^-?[0-9]+(\.[0-9]+)?')
+    if isinstance(nbr, Rationels) or isinstance(nbr, Complex):
+        return nbr
     if nbr == 'i':
         nbr = Complex(0, 1)
     elif re.match(function_regex, nbr):
@@ -51,13 +53,15 @@ def calc(nbr1, nbr2, operator, input):
 def npi_solver(input):
     index = 0
     while len(input) > 1:
-        if re.match(r'[+\-*/^%=]', input[index]):
+        if isinstance(input[index], basestring) and re.match(r'[+\-*/^%=]', input[index]):
             res = calc(input[index-2], input[index-1], input[index], input)
             input[index] = res
             input.pop(index - 1)
             input.pop(index - 2)
             index = 0
         index += 1
+    print("Npi solver end")
+    return input[0]
 
 
 def greater_precedence(operator1, operator2):
@@ -137,7 +141,8 @@ def resolve_func(input, parse_info):
 
 def assign_resolve(input, parse_info):
     var = extract_var(input)
-    resolve(input)
+    res = resolve(input)
+    print(res)
     return 0
 
 
@@ -154,6 +159,10 @@ def parsing(input):
     elif parse_info['resolve_equat']:
         resolve_equat(input)
     else:
-        print(resolve(input))
-    print("parse_info")
-    print(parse_info)
+        res = resolve(input)
+        print('--------------------------------------------------')
+        print res
+        print('--------------------------------------------------')
+
+    # print("parse_info")
+    # print(parse_info)

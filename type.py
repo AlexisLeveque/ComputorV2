@@ -32,7 +32,9 @@ class Rationels:
             self.nbr /= nbr
             return self
         if type(nbr, Complex):
-            return Complex(self.nbr - nbr.r, nbr.i) #galeeeeeere
+            haut = Complex(nbr.r, -nbr.i).mult(self.nbr)
+            bas = nbr.mult(Complex(nbr.r, -nbr.i))
+            return haut.div(Rationels(bas.r))
 
     def mod(self, nbr):
         if type(nbr, Rationels):
@@ -88,7 +90,9 @@ class Complex:
             self.i /= nbr
             return self
         if type(nbr, Complex):
-            return Complex(self.nbr - nbr.r, nbr.i) #galeeeeeere
+            haut = Complex(nbr.r, -nbr.i).mult(self)
+            bas = Complex(nbr.r, -nbr.i).mult(nbr)
+            return haut.div(Rationels(bas.r))
 
     def mod(self, nbr):
         return "Error"

@@ -19,7 +19,7 @@ def recup_var(var):
 
 def type(nbr):
     function_regex = re.compile('^[a-z]+\(')
-    nbr_regex = re.compile('^\-?[0-9]+(\.[0-9]+)?')
+    nbr_regex = re.compile('^-?[0-9]+(\.[0-9]+)?')
     if nbr == 'i':
         nbr = Complex(0, 1)
     elif re.match(function_regex, nbr):
@@ -118,8 +118,8 @@ def resolve(input):
         return shunting_yard(token_list)
     elif input.endswith("=?"):
         token_list = to_tab(input[:-2])
-        return shunting_yard(token_list)
-
+        shun = shunting_yard(token_list)
+        return npi_solver(shun)
     else:
         return 'problem'
 

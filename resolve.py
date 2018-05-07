@@ -52,6 +52,8 @@ def calc(nbr1, nbr2, operator, input):
 
 def npi_solver(input):
     index = 0
+    if len(input) == 1:
+        input[0] = type(input[0])
     while len(input) > 1:
         if isinstance(input[index], basestring) and re.match(r'[+\-*/^%=]', input[index]):
             res = calc(input[index-2], input[index-1], input[index], input)
@@ -60,7 +62,6 @@ def npi_solver(input):
             input.pop(index - 2)
             index = 0
         index += 1
-    print("Npi solver end")
     return input[0]
 
 
@@ -116,12 +117,13 @@ def shunting_yard(tokens):
 
 
 def resolve(input):
-    if re.match(r'^[a-z]+=', input):
-        input = re.sub(r'^[a-z]+=', '', input).lower()
-        token_list = to_tab(input)
-        return shunting_yard(token_list)
-    elif input.endswith("=?"):
+    if input.endswith("=?"):
         token_list = to_tab(input[:-2])
+        shun = shunting_yard(token_list)
+        return npi_solver(shun)
+    elif re.match(r'^[a-z]+=', input):
+        input = re.sub(r'^[a-z]+=', '', input)
+        token_list = to_tab(input)
         shun = shunting_yard(token_list)
         return npi_solver(shun)
     else:
@@ -135,13 +137,21 @@ def resolve_equat(input):
 
 
 
-def resolve_func(input, parse_info):
+def assign_func(input, parse_info):
     return 0#parse equation and enter it
 
 
 def assign_resolve(input, parse_info):
-    var = extract_var(input)
+    var = parse_info["assign"]
     res = resolve(input)
+    if var in variables["rationel"]:
+        variables["rationel"].pop(var)
+    if var in variables["complexe"]:
+        variables["complexe"].pop(var)
+    if isinstance(res, Rationels):
+        variables["rationel"][var] = res
+    if isinstance(res, Complex):
+        variables["complexe"][var] = res
     print(res)
     return 0
 
@@ -153,7 +163,7 @@ def parsing(input):
         return "Error"
 
     if parse_info['assign_func']:
-        resolve_func(input, parse_info)
+        assign_func(input, parse_info)
     elif parse_info['assign']:
         assign_resolve(input, parse_info)
     elif parse_info['resolve_equat']:

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import re
-from parse import to_tab, extract_var, extract_nbr, extract_function, parse
-from type import Complex, Rationels
+from parse import to_tab, parse
+from type import Complex, Rationels, Function, Matrice
 
-variables = {"rationel": {}, "complexe": {}, "matrices": {}}
+variables = {"rationel": {}, "complexe": {}, "matrices": {}, "function": {}}
 
 
 def recup_var(var):
@@ -17,10 +17,28 @@ def recup_var(var):
         print("Error")
 
 
+def resolve_func(func):
+    function_regex = re.compile('^([a-z]+)\((.+)\)')
+    match = re.match(function_regex, func)
+    if match is not None:
+        name = match.group(1)
+
+        calc = match.group(2)
+        res = resolve(calc + '=?')
+
+        function = variables["function"][name]
+        calcul = function.func.replace(function.var, res.to_str())
+        return resolve(calcul + '=?')
+
+    else:
+        return "Error"
+
+
 def type(nbr):
-    function_regex = re.compile('^[a-z]+\(')
+    function_regex = re.compile('^[a-z]+\((.+)\)')
     nbr_regex = re.compile('^-?[0-9]+(\.[0-9]+)?')
-    if isinstance(nbr, Rationels) or isinstance(nbr, Complex):
+    matrice_regex = "^\[\[[-0-9.]+(,[-0-9.]+)*\](;\[[-0-9.]+(,[-0-9.]+)*\])*\]"
+    if isinstance(nbr, Rationels) or isinstance(nbr, Complex) or isinstance(nbr, Matrice):
         return nbr
     if nbr == 'i':
         nbr = Complex(0, 1)
@@ -30,6 +48,10 @@ def type(nbr):
         nbr = recup_var(nbr)
     elif re.match(nbr_regex, nbr):
         nbr = Rationels(int(nbr))
+    elif re.match(nbr_regex, nbr):
+        nbr = Matrice(nbr)
+    else:
+        print "Error"
     return nbr
 
 
@@ -68,18 +90,18 @@ def npi_solver(input):
 def greater_precedence(operator1, operator2):
     if operator2 == '(':
         return False
-    if operator1 == '^':
+    elif operator1 == '^':
         return False
-    if operator1 == '*' and operator2 == '/':
+    elif operator1 == '*' and operator2 == '/':
         return True
-    if operator1 == '*' or operator1 == '/' or operator1 == '%':
+    elif operator1 == '*' or operator1 == '/' or operator1 == '%':
         if operator2 == '^':
             return True
         else:
             return False
-    if operator1 == '+' and operator2 == '-':
+    elif operator1 == '+' and operator2 == '-':
         return True
-    if operator1 == '-' or operator1 == '+':
+    elif operator1 == '-' or operator1 == '+':
         if operator2 == '-' or operator2 == '+':
             return False
         else:
@@ -130,15 +152,17 @@ def resolve(input):
         return 'problem'
 
 
-
 def resolve_equat(input):
 
     return 0#appeller mon second degrée auquel il faut rajouter les (8X)
 
 
-
 def assign_func(input, parse_info):
-    return 0#parse equation and enter it
+    input = re.sub(r'^[a-z]+\((.+)\)=', '', input)
+
+    if to_tab(input) != 'error':
+        variables["function"][parse_info["assign_func"]] = Function(input, parse_info["var"])
+        return input
 
 
 def assign_resolve(input, parse_info):

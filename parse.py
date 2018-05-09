@@ -1,13 +1,29 @@
 import re
 
 
-def extract_function(input):
-    regex = "^[a-z]+\(.*\)"
+def extract_matrice(input):
+    regex = "^\[\[[-0-9.]+(,[-0-9.]+)*\](;\[[-0-9.]+(,[-0-9.]+)*\])*\]"
     match = re.search(regex, input)
     if match is not None:
         return match.group(0)
     else:
         return None
+
+def extract_function(input):
+    regex = "^[a-z]+\((.+)\)"
+    if not re.match(regex, input):
+        return None
+    index = input.find('(')
+    bracket_count = 0
+    while index < len(input):
+        if input[index] == '(':
+            bracket_count += 1
+        elif input[index] == ')':
+            bracket_count -= 1
+        if bracket_count == 0:
+            break
+        index += 1
+    return input[:index + 1]
 
 
 def extract_nbr(input):
@@ -41,6 +57,11 @@ def to_tab(input):
                 nbr = False
             elif extract_var(input[index:]):
                 tmp = extract_var(input[index:])
+                token_list.append([2, tmp])
+                index += len(tmp)
+                nbr = False
+            elif extract_matrice(input[index:]):
+                tmp = extract_matrice(input[index:])
                 token_list.append([2, tmp])
                 index += len(tmp)
                 nbr = False
@@ -78,7 +99,7 @@ def to_tab(input):
 
 
 def parse(input):
-    function_regex = re.compile('^[a-z]+\(')
+    function_regex = re.compile('^([a-z]+)\((.+)\)=')
     parse_info = {'assign': False, 'assign_func': False, 'resolve_equat': False, 'error': False}
     if not input:
         parse_info['error'] = True
@@ -86,9 +107,11 @@ def parse(input):
         return parse_info
     if not input.endswith('?'):
         parse_info['assign'] = True
-        if re.match(function_regex, input):
+        match = re.match(function_regex, input)
+        if match is not None:
             tmp = extract_function(input)
-            parse_info['assign_func'] = tmp
+            parse_info['assign_func'] = match.group(1)
+            parse_info['var'] = match.group(2)
             if input[len(tmp)] != "=":
                 print("Error: assign")
                 parse_info['error'] = True
@@ -107,84 +130,3 @@ def parse(input):
         print("Error: more than one equal")
         parse_info['error'] = True
     return parse_info
-
-
-
-
-
-
-# def parse_all(input):
-#     function_regex = re.compile('^[a-z]+\(')
-#     index = 0
-#     parse_info = {'nbr': None, 'assign': None, 'equal': False, 'assign_func': False, "error": False}
-#     if not input.endswith('?'):
-#         parse_info['assign'] = True#check first is a variable tho
-#     while index < len(input):
-#         if re.match(function_regex, input[index:]):
-#             if parse_info['nbr'] == False:
-#                 print 'Error: Excepected Operator near \"%s\"' % input[index-3:index+2]
-#                 parse_info['error'] = True
-#                 return parse_info
-#             if index == 0 and parse_info['assign'] is not None:
-#                 tmp = extract_function(input, 0)
-#                 index += len(tmp)
-#                 parse_info['assign_func'] = tmp
-#                 parse_info['nbr'] = False
-#             else:
-#                 index += len(extract_function(input, index))
-#                 parse_info['nbr'] = False
-#         elif input[index].isalpha():
-#             tmp = extract_var(input, index)
-#             if tmp == "x" and index == 0 and parse_info['assign'] == True:
-#                 parse_info['assign'] = 'x'
-#                 index += 1
-#                 parse_info['nbr'] = False
-#             elif tmp == "i" or tmp == 'x':
-#                 index += 1
-#                 parse_info['nbr'] = False
-#             elif parse_info['nbr'] == False:
-#                 print 'Error: Excepected Operator near \"%s\"' % input[index-3:index+2]
-#                 parse_info['error'] = True
-#                 return parse_info
-#             elif index == 0 and parse_info['assign'] is not None:
-#                 parse_info['nbr'] = False
-#                 parse_info['assign'] = tmp
-#                 index += len(tmp)
-#             else:
-#                 parse_info['nbr'] = False
-#                 index += len(tmp)
-#         #ismatrice
-#         elif input[index].isdigit():
-#             if parse_info['nbr'] == False:
-#                 print 'Error: Excepected Operator near \"%s\"' % input[index-3:index+2]
-#                 parse_info['error'] = True
-#                 return parse_info
-#             else:
-#                 parse_info['nbr'] = False
-#                 index += len(extract_nbr(input, index))
-#         elif re.match(r'[+\-*/^%=]', input[index]):
-#             if input[index] == '-':
-#                 parse_info['nbr'] = False
-#             if parse_info['nbr'] == True:
-#                 print "Error: Excepected Number or variable near \"%s\"" % input[index-3:index+2]
-#                 parse_info['error'] = True
-#                 return parse_info
-#             elif input[index] == '=' and parse_info['equal'] == True:
-#                 print 'Error: Unexpected = near \"%s\"' % input[index-3:index+2]
-#                 parse_info['error'] = True
-#             elif input[index] == '=':
-#                 parse_info['equal'] = True
-#                 index += 1
-#                 parse_info['nbr'] = None
-#             else:
-#                 index += 1
-#                 parse_info['nbr'] = True
-#         else:
-#             index +=1
-#         if parse_info['error'] == True:
-#             return parse_info
-#     if parse_info['error'] == False and parse_info['assign'] == True and parse_info['assign_func'] == False:
-#         print("Error: No variable to assign")
-#         parse_info['error'] = True
-#     return parse_info
-

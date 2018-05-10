@@ -1,5 +1,6 @@
 from __future__ import division
 from math_func import ft_pow
+from parse import extract_nbr
 
 
 class Function:
@@ -133,6 +134,30 @@ class Complex:
 
 
 class Matrice:
-    def __init__(self, matrice):
-        lign = matrice.count(';') + 1
-        column = matrice.
+    def __init__(self, matrice_str):
+        lign = matrice_str.count(';') + 1
+        column = matrice_str.split(']')[0].count(',') + 1
+        matrice = []
+        index = 1
+        lign_count = 0
+        column_count = 0
+        while index < len(matrice_str):
+            if matrice_str[index] == '[':
+                lign_count += 1
+                matrice.append([])
+                index += 1
+            elif matrice_str[index] == ']':
+                if column_count != column:
+                    print("Error: Matrice not well field")
+                column_count = 0
+                index += 1
+            elif matrice_str[index] == ',':
+                column_count += 1
+                index += 1
+            elif matrice_str[index].isdigit():
+                nbr = extract_nbr(matrice_str[:index])
+                index += len(nbr)
+            else:
+                print("Can't recognise character in matrice")
+        if lign_count != lign:
+            print("Error: Matrice not well field")

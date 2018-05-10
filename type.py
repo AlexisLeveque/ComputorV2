@@ -133,5 +133,6 @@ class Complex:
 
 
 class Matrice:
-    def __init__(self, nbr):
-        self.r = 0
+    def __init__(self, matrice):
+        lign = matrice.count(';') + 1
+        column = matrice.

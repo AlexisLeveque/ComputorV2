@@ -30,6 +30,7 @@ if "b" in variables["rationel"]:
 
 print '----------------------------'
 
-func = 'func(54896+689/5*(3+2))'
+func = '[[2,5,4][4,8,7]]'
+print func.split(']')[0].count(',') + 1
 index = 4
 print(func[:4] + '*' + func[4:])

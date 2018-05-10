@@ -1,6 +1,5 @@
 from __future__ import division
 from math_func import ft_pow
-from parse import extract_nbr
 
 
 class Function:
@@ -26,6 +25,18 @@ class Rationels:
             return Rationels(res)
         if isinstance(nbr, Complex):
             return Complex(self.nbr + nbr.r, nbr.i)
+        if isinstance(nbr, Matrice):
+            res_matrice = []
+            lign_index = 0
+            while lign_index < nbr.lign:
+                res_matrice.append([])
+                col_index = 0
+                while col_index < nbr.column:
+                    res_matrice[lign_index].append(Rationels(nbr.matrice[lign_index][col_index].nbr + self.nbr))
+                    col_index += 1
+                lign_index += 1
+            return Matrice(res_matrice, nbr.lign, nbr.column)
+
 
     def sous(self, nbr):
         if isinstance(nbr, Rationels):
@@ -134,30 +145,9 @@ class Complex:
 
 
 class Matrice:
-    def __init__(self, matrice_str):
-        lign = matrice_str.count(';') + 1
-        column = matrice_str.split(']')[0].count(',') + 1
-        matrice = []
-        index = 1
-        lign_count = 0
-        column_count = 0
-        while index < len(matrice_str):
-            if matrice_str[index] == '[':
-                lign_count += 1
-                matrice.append([])
-                index += 1
-            elif matrice_str[index] == ']':
-                if column_count != column:
-                    print("Error: Matrice not well field")
-                column_count = 0
-                index += 1
-            elif matrice_str[index] == ',':
-                column_count += 1
-                index += 1
-            elif matrice_str[index].isdigit():
-                nbr = extract_nbr(matrice_str[:index])
-                index += len(nbr)
-            else:
-                print("Can't recognise character in matrice")
-        if lign_count != lign:
-            print("Error: Matrice not well field")
+    def __init__(self, matrice, lign, column):
+        self.column = column
+        self.lign = lign
+        self.matrice = matrice
+
+

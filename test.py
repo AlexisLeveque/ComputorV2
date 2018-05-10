@@ -33,4 +33,5 @@ print '----------------------------'
 func = '[[2,5,4][4,8,7]]'
 print func.split(']')[0].count(',') + 1
 index = 4
+print(func[:4])
 print(func[:4] + '*' + func[4:])

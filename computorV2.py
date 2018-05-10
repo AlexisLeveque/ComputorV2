@@ -20,7 +20,7 @@ def add_multiplication(input):
 
 while 1:
     input = raw_input('> ')
-    input = re.sub(r'[ \t]', '', input).lower() # rajouter un * si on a des chiffres puis des lettres
+    input = re.sub(r'[ \t]', '', input).lower()
     input = add_multiplication(input)
     print(input)
     if input == 'quit' or input == 'q' or input == 'exit':

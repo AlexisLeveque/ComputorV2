@@ -1,9 +1,42 @@
 # -*- coding: utf-8 -*-
 import re
-from parse import to_tab, parse
+from parse import to_tab, parse, extract_nbr
 from type import Complex, Rationels, Function, Matrice
 
 variables = {"rationel": {}, "complexe": {}, "matrices": {}, "function": {}}
+
+
+def parse_matrice(matrice_str):
+    lign = matrice_str.count(';') + 1
+    column = matrice_str.split(']')[0].count(',') + 1
+    matrice = []
+    index = 1
+    lign_count = 0
+    column_count = 0
+    while index < len(matrice_str):
+        if matrice_str[index] == '[':
+            lign_count += 1
+            matrice.append([])
+            index += 1
+        elif matrice_str[index] == ']':
+            if column_count != column:
+                print("Error: Matrice not well field")
+            column_count = 0
+            index += 1
+        elif matrice_str[index] == ',':
+            column_count += 1
+            index += 1
+        elif matrice_str[index] == ';':
+            index += 1
+        elif matrice_str[index].isdigit():
+            nbr = extract_nbr(matrice_str[index:])
+            matrice[lign_count - 1].append(types(nbr))
+            index += len(nbr)
+        else:
+            print("Can't recognise character in matrice")
+    if lign_count + 1 != lign:
+        print("Error: Matrice not well field")
+    return Matrice(matrice, lign, column)
 
 
 def recup_var(var):
@@ -34,7 +67,7 @@ def resolve_func(func):
         return "Error"
 
 
-def type(nbr):
+def types(nbr):
     function_regex = re.compile('^[a-z]+\((.+)\)')
     nbr_regex = re.compile('^-?[0-9]+(\.[0-9]+)?')
     matrice_regex = "^\[\[[-0-9.]+(,[-0-9.]+)*\](;\[[-0-9.]+(,[-0-9.]+)*\])*\]"
@@ -48,16 +81,16 @@ def type(nbr):
         nbr = recup_var(nbr)
     elif re.match(nbr_regex, nbr):
         nbr = Rationels(int(nbr))
-    elif re.match(nbr_regex, nbr):
-        nbr = Matrice(nbr)
+    elif re.match(matrice_regex, nbr):
+        nbr = parse_matrice(nbr)
     else:
         print "Error"
     return nbr
 
 
 def calc(nbr1, nbr2, operator, input):
-    nbr1 = type(nbr1)
-    nbr2 = type(nbr2)
+    nbr1 = types(nbr1)
+    nbr2 = types(nbr2)
     if operator == '+':
         return nbr1.add(nbr2)
     elif operator == '-':
@@ -70,12 +103,14 @@ def calc(nbr1, nbr2, operator, input):
         return nbr1.mod(nbr2)
     elif operator == '^':
         return nbr1.pow(nbr2)
+    elif operator == '**':
+        return nbr1.m_mult(nbr2)
 
 
 def npi_solver(input):
     index = 0
     if len(input) == 1:
-        input[0] = type(input[0])
+        input[0] = types(input[0])
     while len(input) > 1:
         if isinstance(input[index], basestring) and re.match(r'[+\-*/^%=]', input[index]):
             res = calc(input[index-2], input[index-1], input[index], input)

@@ -13,13 +13,13 @@ def parse_matrice(matrice_str):
     index = 1
     lign_count = 0
     column_count = 0
-    while index < len(matrice_str):
+    while index < len(matrice_str) - 1:
         if matrice_str[index] == '[':
             lign_count += 1
             matrice.append([])
             index += 1
         elif matrice_str[index] == ']':
-            if column_count != column:
+            if column_count + 1 != column:
                 print("Error: Matrice not well field")
             column_count = 0
             index += 1
@@ -34,7 +34,7 @@ def parse_matrice(matrice_str):
             index += len(nbr)
         else:
             print("Can't recognise character in matrice")
-    if lign_count + 1 != lign:
+    if lign_count != lign:
         print("Error: Matrice not well field")
     return Matrice(matrice, lign, column)
 
@@ -88,7 +88,7 @@ def types(nbr):
     return nbr
 
 
-def calc(nbr1, nbr2, operator, input):
+def calc(nbr1, nbr2, operator):
     nbr1 = types(nbr1)
     nbr2 = types(nbr2)
     if operator == '+':
@@ -113,7 +113,7 @@ def npi_solver(input):
         input[0] = types(input[0])
     while len(input) > 1:
         if isinstance(input[index], basestring) and re.match(r'[+\-*/^%=]', input[index]):
-            res = calc(input[index-2], input[index-1], input[index], input)
+            res = calc(input[index-2], input[index-1], input[index])
             input[index] = res
             input.pop(index - 1)
             input.pop(index - 2)

@@ -150,4 +150,16 @@ class Matrice:
         self.lign = lign
         self.matrice = matrice
 
-
+    def __str__(self):
+        lign_index = 0
+        while lign_index < self.lign:
+            col_index = 0
+            print '[',
+            while col_index < self.column:
+                print " " + str(self.matrice[lign_index][col_index]) + " ",
+                col_index += 1
+                if col_index < self.column:
+                    print ",",
+            print ']'
+            lign_index += 1
+        return ''

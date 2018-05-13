@@ -8,8 +8,6 @@ def extract_matrice(input):
     if match is not None:
         return match.group(0)
     else:
-        if input.count('[') > 0:
-            print "Matrice mal formatée"
         return None
 
 def extract_function(input):

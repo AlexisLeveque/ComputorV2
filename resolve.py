@@ -28,12 +28,14 @@ def parse_matrice(matrice_str):
             index += 1
         elif matrice_str[index] == ';':
             index += 1
-        elif matrice_str[index].isdigit() or matrice_str[index] == '-':
-            nbr = extract_nbr(matrice_str[index:])
-            matrice[lign_count - 1].append(types(nbr))
-            index += len(nbr)
         else:
-            print("Can't recognise character in matrice")
+            i = matrice_str.find(',')
+            if i >= 0:
+                nbr = resolve(matrice_str[index:i])
+                matrice[lign_count - 1].append(nbr)
+                index += i - index
+            else:
+                "Error"
     if lign_count != lign:
         print("Error: Matrice not well field")
     return Matrice(matrice, lign, column)

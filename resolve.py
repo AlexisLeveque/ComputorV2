@@ -28,7 +28,7 @@ def parse_matrice(matrice_str):
             index += 1
         elif matrice_str[index] == ';':
             index += 1
-        elif matrice_str[index].isdigit():
+        elif matrice_str[index].isdigit() or matrice_str[index] == '-':
             nbr = extract_nbr(matrice_str[index:])
             matrice[lign_count - 1].append(types(nbr))
             index += len(nbr)
@@ -80,7 +80,7 @@ def types(nbr):
     elif nbr.isalpha():
         nbr = recup_var(nbr)
     elif re.match(nbr_regex, nbr):
-        nbr = Rationels(int(nbr))
+        nbr = Rationels(float(nbr))
     elif re.match(matrice_regex, nbr):
         nbr = parse_matrice(nbr)
     else:

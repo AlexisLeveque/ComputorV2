@@ -3,7 +3,7 @@ import re
 
 
 def extract_matrice(input):
-    regex = "^\[\[[-0-9.]+(,[-0-9.]+)*\](;\[[-0-9.]+(,[-0-9.]+)*\])*\]"
+    regex = "^\[\[[^],]+(,[^],]+)*\](;\[[^],]+(,[^],]+)*\])*\]"
     match = re.search(regex, input)
     if match is not None:
         return match.group(0)

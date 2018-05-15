@@ -29,13 +29,16 @@ def parse_matrice(matrice_str):
         elif matrice_str[index] == ';':
             index += 1
         else:
-            i = matrice_str.find(',')
+            i = matrice_str.find(',', index)
+            y = matrice_str.find(']', index)
+            if y < i or i == -1:
+                i = y
             if i >= 0:
-                nbr = resolve(matrice_str[index:i])
+                nbr = resolve(matrice_str[index:i] + "=?")
                 matrice[lign_count - 1].append(nbr)
                 index += i - index
             else:
-                "Error"
+                "Error 18"
     if lign_count != lign:
         print("Error: Matrice not well field")
     return Matrice(matrice, lign, column)
@@ -49,7 +52,7 @@ def recup_var(var):
     elif var in variables["matrices"]:
         return variables["matrices"][var]
     else:
-        print("Error")
+        print("Error 13")
 
 
 def resolve_func(func):
@@ -66,13 +69,13 @@ def resolve_func(func):
         return resolve(calcul + '=?')
 
     else:
-        return "Error"
+        return "Error 22"
 
 
 def types(nbr):
     function_regex = re.compile('^[a-z]+\((.+)\)')
     nbr_regex = re.compile('^-?[0-9]+(\.[0-9]+)?')
-    matrice_regex = "^\[\[[-0-9.]+(,[-0-9.]+)*\](;\[[-0-9.]+(,[-0-9.]+)*\])*\]"
+    matrice_regex = "^\[\[[^],]+(,[^],]+)*\](;\[[^],]+(,[^],]+)*\])*\]"
     if isinstance(nbr, Rationels) or isinstance(nbr, Complex) or isinstance(nbr, Matrice):
         return nbr
     if nbr == 'i':
@@ -86,7 +89,7 @@ def types(nbr):
     elif re.match(matrice_regex, nbr):
         nbr = parse_matrice(nbr)
     else:
-        print "Error"
+        print "Error 15"
     return nbr
 
 

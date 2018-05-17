@@ -10,6 +10,7 @@ def extract_matrice(input):
     else:
         return None
 
+
 def extract_function(input):
     regex = "^[a-z]+\((.+)\)"
     if not re.match(regex, input):

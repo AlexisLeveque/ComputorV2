@@ -65,7 +65,7 @@ def resolve_func(func):
         res = resolve(calc + '=?')
 
         function = variables["function"][name]
-        calcul = function.func.replace(function.var, res.to_str())
+        calcul = function.func.replace(function.var, '(' + res.to_str() + ')').replace(' ', '')
         return resolve(calcul + '=?')
 
     else:
@@ -117,7 +117,7 @@ def npi_solver(input):
     if len(input) == 1:
         input[0] = types(input[0])
     while len(input) > 1:
-        if isinstance(input[index], basestring) and re.match(r'[+\-*/^%=]', input[index]):
+        if isinstance(input[index], basestring) and re.match(r'^\*\*|[\-+/^%=*]$', input[index]):
             res = calc(input[index-2], input[index-1], input[index])
             input[index] = res
             input.pop(index - 1)

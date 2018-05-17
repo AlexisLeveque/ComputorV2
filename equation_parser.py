@@ -1,4 +1,20 @@
 import re
+from type import Complex, Rationels, Function, Matrice
+from parse import extract_var, extract_function
+
+
+def add_multiplication(input):
+    index = 0
+    number = False
+    while index < len(input):
+        if input[index].isalpha() and number:
+            input = input[:index] + '*' + input[index:]
+        if input[index].isdigit():
+            number = True
+        else:
+            number = False
+        index += 1
+    return input
 
 
 def add_to_tab(expr,  inverse):
@@ -19,6 +35,7 @@ def move_to_the_same_side(expr):
         index += 1
     tab.append(add_to_tab(expr[last_sign: index], inverse))
 
+
 def add_one_before_x(equat):
     if equat.startswith('x'):
         expr = '1'+equat
@@ -30,34 +47,53 @@ def replace_var(equat, variables):
     complex_regex = "[^a-z]i[^a-z]|^i[^a-z]|[^a-z]i$"
     function_regex = "([a-z]+)\((.+)\)"
     var_regex = "[a-z]+"
-    if re.match(complex_regex , equat):
+    if re.match(complex_regex, equat):
         print "Error can't have complex in equation"
-    while re.match(function_regex, equat):
-        match = re.match(function_regex, equat)
-        func_name = match.group(1)
-        func_var = match.group(2)
-        function = variables['function'][func_name]
-        equat = equat.replace(match.group(0), function.func.replace(function.var, func_var))
-    while re.match(var_regex, equat):
+    index = 0
+    while index < len(equat):
+        if equat[index].isalpha():
+            if extract_function(equat[index:]):
+                func_regex = re.compile('^([a-z]+)\((.+)\)')
+                match = re.match(func_regex, equat[index:])
+                if match is not None:
+                    name = match.group(1)
+                    calc = '(' + match.group(2) + ')'
 
-
-
-
-
-
-
-
+                    function = variables["function"][name]
+                    equat = equat.replace(match.group(0), function.func.replace(function.var, calc))
+                index = 0
+            else:
+                var = extract_var(equat[index:])
+                if var != 'x':
+                    nbr = ""
+                    if var in variables["rationel"]:
+                        nbr = variables["rationel"][var]
+                        nbr = str(nbr.nbr)
+                    elif var in variables["complexe"]:
+                        print "Error can't have complex in equation"
+                    elif var in variables["matrices"]:
+                        print "Error Can't have matrice in second degree equation"
+                    else:
+                        print("Error: var not defined %s" % var)
+                    equat = equat.replace(var, nbr).replace(' ', '')
+                    index = 0
+        index += 1
+    print("equat:")
+    print(equat)
+    return equat
 
 
 def parse_equat(equat, variables):
-    replace_var(equat, variables)
-    simpler = add_one_before_x(equat)
+    r = replace_var(equat, variables)
+    simpler = add_multiplication(add_one_before_x(r))
     print(simpler)
     same_sided = move_to_the_same_side(simpler)
     return same_sided
 
 
-parse_equat("35x^2+8-25x=ax-trib+x+f(3+5)")
+# variables = {"rationel": {"trib": Rationels(21), "ax": Rationels(2)}, "complexe": {}, "matrices": {}, "function": {'f': Function('x^2', 'x')}}
+
+# parse_equat("35x^2+8-25x=ax-trib+x+f(3+5)", variables)
 
 
 # replace var et fonction par leur valeur tant qu'on en a .

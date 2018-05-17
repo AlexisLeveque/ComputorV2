@@ -94,12 +94,12 @@ class Complex:
     def __str__(self):
         str_r = str(self.r)
         str_i = str(self.i)
-        return str_r + ' + ' + str_i + 'i '
+        return str_r + ' + ' + str_i + '*i '
 
     def to_str(self):
         str_r = str(self.r)
         str_i = str(self.i)
-        return str_r + ' + ' + str_i + 'i '
+        return str_r + ' + ' + str_i + '*i '
 
     def add(self, nbr):
         if isinstance(nbr, Rationels):

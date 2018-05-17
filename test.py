@@ -31,6 +31,10 @@ if "b" in variables["rationel"]:
 print '----------------------------'
 
 func = '[[2,5,4][4,8,7]]'
+nbr_regex = re.compile('[0-9]+')
+print(func)
+match = re.match(nbr_regex, func)
+print(match.group(0))
 print func.split(']')[0].count(',') + 1
 index = 4
 print(func[:4])

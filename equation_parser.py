@@ -1,6 +1,37 @@
 import re
 from type import Complex, Rationels, Function, Matrice
-from parse import extract_var, extract_function
+from parse import extract_var, extract_function, to_tab
+
+
+def reduction(equat):
+    tab = to_tab(equat)
+    print("tab")
+    print(tab)
+
+
+def parenthesis(equat):
+    index = 0
+    parenthese = -1
+    parentheses_start = 0
+    while index < len(equat):
+        if equat[index] == ')':
+            if parenthese == -1:
+                print("Error: parenthese")
+            else:
+                parenthese -= 1
+                if parenthese == 0:
+                    parenthese = -1
+                    res = parenthesis(equat[parentheses_start + 1:index])
+                    equat = equat.replace(equat[parentheses_start:index+1], res)
+                    index = 0
+        if equat[index] == '(':
+            if parenthese == -1:
+                parentheses_start = index
+                parenthese = 1
+            else:
+                parenthese += 1
+        index += 1
+    return reduction(equat)
 
 
 def add_multiplication(input):
@@ -40,7 +71,6 @@ def add_one_before_x(equat):
     if equat.startswith('x'):
         expr = '1'+equat
     return equat.replace('-x', '-1x').replace('+x', '+1x')
-
 
 
 def replace_var(equat, variables):
@@ -87,13 +117,14 @@ def parse_equat(equat, variables):
     r = replace_var(equat, variables)
     simpler = add_multiplication(add_one_before_x(r))
     print(simpler)
+    parenthesis(simpler)
     same_sided = move_to_the_same_side(simpler)
     return same_sided
 
 
-# variables = {"rationel": {"trib": Rationels(21), "ax": Rationels(2)}, "complexe": {}, "matrices": {}, "function": {'f': Function('x^2', 'x')}}
-
-# parse_equat("35x^2+8-25x=ax-trib+x+f(3+5)", variables)
+variables = {"rationel": {"trib": Rationels(21), "ax": Rationels(2)}, "complexe": {}, "matrices": {}, "function": {'f': Function('x^2 + trib', 'x')}}
+print("35x^2+8-25x=ax-trib+x+f(3+5)")
+parse_equat("35x^2+8-25x=ax-trib+x+f(3+5)", variables)
 
 
 # replace var et fonction par leur valeur tant qu'on en a .

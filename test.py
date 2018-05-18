@@ -31,11 +31,15 @@ if "b" in variables["rationel"]:
 print '----------------------------'
 
 func = '[[2,5,4][4,8,7]]'
-nbr_regex = re.compile('[0-9]+')
-print(func)
-match = re.match(nbr_regex, func)
-print(match.group(0))
-print func.split(']')[0].count(',') + 1
-index = 4
-print(func[:4])
-print(func[:4] + '*' + func[4:])
+
+index = 0
+while 1:
+    print("while")
+
+    if 1:
+        print("1")
+        if func[index].isdigit():
+            break
+    index +=1
+func = func.replace(func[3:5], "rotabla")
+print func

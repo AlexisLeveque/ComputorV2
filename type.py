@@ -2,6 +2,57 @@ from __future__ import division
 from math_func import ft_pow
 
 
+class Inconnue:
+
+    nbr = {"0": 0, "1": 0, "2": 0}
+
+    def __init__(self, nbr, puissance):
+        self.nbr = nbr
+        self.puissance = puissance
+
+    def add(self, nbr):
+        if isinstance(nbr, Rationels):
+            res = self.nbr + nbr.nbr
+            return Rationels(res)
+        if isinstance(nbr, Inconnue):
+            return Complex(self.nbr + nbr.r, nbr.i)
+
+    def sous(self, nbr):
+        if isinstance(nbr, Rationels):
+            res = self.nbr + nbr.nbr
+            return Rationels(res)
+        if isinstance(nbr, Inconnue):
+            return Complex(self.nbr + nbr.r, nbr.i)
+
+    def mult(self, nbr):
+        if isinstance(nbr, Rationels):
+            res = self.nbr + nbr.nbr
+            return Rationels(res)
+        if isinstance(nbr, Inconnue):
+            return Complex(self.nbr + nbr.r, nbr.i)
+
+    def div(self, nbr):
+        if isinstance(nbr, Rationels):
+            res = self.nbr + nbr.nbr
+            return Rationels(res)
+        if isinstance(nbr, Inconnue):
+            return Complex(self.nbr + nbr.r, nbr.i)
+
+    def mod(self, nbr):
+        if isinstance(nbr, Rationels):
+            res = self.nbr + nbr.nbr
+            return Rationels(res)
+        if isinstance(nbr, Inconnue):
+            return Complex(self.nbr + nbr.r, nbr.i)
+
+    def pow(self, nbr):
+        if isinstance(nbr, Rationels):
+            res = self.nbr + nbr.nbr
+            return Rationels(res)
+        if isinstance(nbr, Inconnue):
+            return Complex(self.nbr + nbr.r, nbr.i)
+
+
 class Function:
     def __init__(self, function, var):
         self.func = function

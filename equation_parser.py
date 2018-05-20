@@ -1,12 +1,74 @@
 import re
-from type import Complex, Rationels, Function, Matrice
+from resolve import shunting_yard
+from type import Rationels, Function, Inconnue
 from parse import extract_var, extract_function, to_tab
 
 
+def types(nbr):
+    nbr_regex = re.compile('^-?[0-9]+(\.[0-9]+)?')
+    if isinstance(nbr, Rationels) or isinstance(nbr, Inconnue):
+        return nbr
+    if nbr == 'x':
+        nbr = Inconnue(1, 1)
+    elif re.match(nbr_regex, nbr):
+        nbr = Rationels(float(nbr))
+    else:
+        print "Error: can't recognise this thing"
+    return nbr
+
+
+def calc(nbr1, nbr2, operator):
+    nbr1 = types(nbr1)
+    nbr2 = types(nbr2)
+    if operator == '+':
+        if isinstance(nbr2, Inconnue):
+            nbr2.add(nbr1)
+        return nbr1.add(nbr2)
+    elif operator == '-':
+        if isinstance(nbr2, Inconnue):
+            nbr2.sous(nbr1, 1)
+        return nbr1.sous(nbr2)
+    elif operator == '*':
+        if isinstance(nbr2, Inconnue):
+            nbr2.mult(nbr1)
+        return nbr1.mult(nbr2)
+    elif operator == '/':
+        if isinstance(nbr2, Inconnue):
+            nbr2.div(nbr1, 1)
+        return nbr1.div(nbr2)
+    elif operator == '%':
+        if isinstance(nbr2, Inconnue):
+            nbr2.mod(nbr1, 1)
+        return nbr1.mod(nbr2)
+    elif operator == '^':
+        if isinstance(nbr2, Inconnue):
+            nbr2.pow(nbr1, 1)
+        return nbr1.pow(nbr2)
+    elif operator == '**':
+        print("Error: can't have ** operator")
+
+
+def npi(input):
+    index = 0
+    if len(input) == 1:
+        return input[0]
+    while len(input) > 1:
+        if isinstance(input[index], basestring) and re.match(r'^\*\*|[\-+/^%=*]$', input[index]):
+            res = calc(input[index-2], input[index-1], input[index])
+            input[index] = res
+            input.pop(index - 1)
+            input.pop(index - 2)
+            index = 0
+        index += 1
+    return input[0]
+
+
 def reduction(equat):
-    tab = to_tab(equat)
     print("tab")
-    print(tab)
+    first_part = equat.split('=')[0]
+    tab = to_tab(first_part)
+    print(shunting_yard(tab))
+    return "8"
 
 
 def parenthesis(equat):

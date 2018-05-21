@@ -6,51 +6,84 @@ class Inconnue:
 
     nbr = {"0": 0, "1": 0, "2": 0}
 
-    def __init__(self, nbr, puissance):
-        self.nbr = nbr
-        self.puissance = puissance
+    def __init__(self, coef, puissance):
+        self.nbr[str(puissance)] = coef
+
+    def clone(self):
+        clone = Inconnue(0, 0)
+        clone.nbr = self.nbr
+        return clone
 
     def add(self, nbr):
+        res = self.clone()
         if isinstance(nbr, Rationels):
-            res = self.nbr + nbr.nbr
-            return Rationels(res)
+            res.nbr["0"] += nbr.nbr
+            return res
         if isinstance(nbr, Inconnue):
-            return Complex(self.nbr + nbr.r, nbr.i)
+            for key, value in nbr.nbr:
+                res.nbr[key] += value
 
-    def sous(self, nbr):
+    def sous(self, nbr, reverse=0):
+        res = self.clone()
         if isinstance(nbr, Rationels):
-            res = self.nbr + nbr.nbr
-            return Rationels(res)
+            if reverse == 0:
+                res.nbr["0"] -= nbr.nbr
+            else:
+                res.nbr["0"] = nbr.nbr - res.nbr["0"]
+            return res
         if isinstance(nbr, Inconnue):
-            return Complex(self.nbr + nbr.r, nbr.i)
+            if reverse == 0:
+                for key, value in nbr.nbr:
+                    res.nbr[key] -= value
+            else:
+                for key, value in nbr.nbr:
+                    res.nbr[key] = value - res.nbr[key]
+            return res
 
     def mult(self, nbr):
+        res = self.clone()
         if isinstance(nbr, Rationels):
-            res = self.nbr + nbr.nbr
-            return Rationels(res)
+            res.nbr["0"] *= nbr.nbr
+            return res
         if isinstance(nbr, Inconnue):
-            return Complex(self.nbr + nbr.r, nbr.i)
+            for key, value in nbr.nbr:
+                if value != 0:
+                    for pow, nbr in res.nbr:
+                        if nbr != 0:
+                            res.nbr[key + pow] += value * nbr
+                            res.pow = 0
+            return res
 
-    def div(self, nbr):
+    def div(self, nbr, reverse=0):
+        res = self.clone()
         if isinstance(nbr, Rationels):
-            res = self.nbr + nbr.nbr
-            return Rationels(res)
+            res.nbr["0"] /= nbr.nbr
+            return res
         if isinstance(nbr, Inconnue):
-            return Complex(self.nbr + nbr.r, nbr.i)
+            for key, value in nbr.nbr:
+                if value != 0:
+                    for pow, nbr in res.nbr:
+                        if nbr != 0:
+                            if reverse == 0:
+                                res.nbr[key - pow] += value / nbr
+                                res.nbr[pow] = 0
+                            else:
+                                res.nbr[pow - key] += nbr / value
+                                res.nbr[pow] = 0
+            return res
 
     def mod(self, nbr):
-        if isinstance(nbr, Rationels):
-            res = self.nbr + nbr.nbr
-            return Rationels(res)
-        if isinstance(nbr, Inconnue):
-            return Complex(self.nbr + nbr.r, nbr.i)
+        print "Error can't modulo"
 
     def pow(self, nbr):
         if isinstance(nbr, Rationels):
-            res = self.nbr + nbr.nbr
-            return Rationels(res)
+            res = self.clone()
+            for key, value in self.nbr:
+                if value != 0:
+                    res.nbr[key + nbr.nbr] = value
+                    res.nbr[key] = 0
         if isinstance(nbr, Inconnue):
-            return Complex(self.nbr + nbr.r, nbr.i)
+            print "Error can't pow inconnue"
 
 
 class Function:

@@ -43,7 +43,9 @@ class Inconnue:
     def mult(self, nbr):
         res = self.clone()
         if isinstance(nbr, Rationels):
-            res.nbr["0"] *= nbr.nbr
+            for key, value in res.nbr:
+                if value != 0:
+                    res.nbr[key] *= nbr.nbr
             return res
         if isinstance(nbr, Inconnue):
             for key, value in nbr.nbr:
@@ -57,7 +59,17 @@ class Inconnue:
     def div(self, nbr, reverse=0):
         res = self.clone()
         if isinstance(nbr, Rationels):
-            res.nbr["0"] /= nbr.nbr
+            if reverse == 0:
+                for key, value in res.nbr:
+                    if value != 0:
+                        res.nbr[key] /= nbr.nbr
+                return res
+            else:
+                for key, value in res.nbr:
+                    if value != 0:
+                        res.nbr[key] = nbr.nbr / res.nbr[key]
+                return res
+
             return res
         if isinstance(nbr, Inconnue):
             for key, value in nbr.nbr:
@@ -75,15 +87,16 @@ class Inconnue:
     def mod(self, nbr):
         print "Error can't modulo"
 
-    def pow(self, nbr):
+    def pow(self, nbr, reverse=0):
+        res = self.clone()
         if isinstance(nbr, Rationels):
-            res = self.clone()
-            for key, value in self.nbr:
-                if value != 0:
-                    res.nbr[key + nbr.nbr] = value
-                    res.nbr[key] = 0
+            if reverse == 0:
+                res.nbr["0"] = ft_pow(res.nbr["0"], nbr.nbr)
+            else:
+                res.nbr["0"] = ft_pow(nbr.nbr, res.nbr["0"])
+            return res
         if isinstance(nbr, Inconnue):
-            print "Error can't pow inconnue"
+            print "Error can't pow Inconnue"
 
 
 class Function:

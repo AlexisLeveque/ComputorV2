@@ -22,15 +22,15 @@ def calc(nbr1, nbr2, operator):
     nbr2 = types(nbr2)
     if operator == '+':
         if isinstance(nbr2, Inconnue):
-            nbr2.add(nbr1)
+            return nbr2.add(nbr1)
         return nbr1.add(nbr2)
     elif operator == '-':
         if isinstance(nbr2, Inconnue):
-            nbr2.sous(nbr1, 1)
+            return nbr2.sous(nbr1, 1)
         return nbr1.sous(nbr2)
     elif operator == '*':
         if isinstance(nbr2, Inconnue):
-            nbr2.mult(nbr1)
+            return nbr2.mult(nbr1)
         return nbr1.mult(nbr2)
     elif operator == '/':
         if isinstance(nbr2, Inconnue):
@@ -38,7 +38,7 @@ def calc(nbr1, nbr2, operator):
         return nbr1.div(nbr2)
     elif operator == '%':
         if isinstance(nbr2, Inconnue):
-            nbr2.mod(nbr1, 1)
+            nbr2.mod(nbr1)
         return nbr1.mod(nbr2)
     elif operator == '^':
         if isinstance(nbr2, Inconnue):
@@ -67,7 +67,8 @@ def reduction(equat):
     print("tab")
     first_part = equat.split('=')[0]
     tab = to_tab(first_part)
-    print(shunting_yard(tab))
+    shun = shunting_yard(tab)
+    npi(shun)
     return "8"
 
 

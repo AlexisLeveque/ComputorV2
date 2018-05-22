@@ -68,9 +68,8 @@ def reduction(equat):
     first_part = equat.split('=')[0]
     tab = to_tab(first_part)
     shun = shunting_yard(tab)
-    npi(shun)
+    inp = npi(shun)
     return "8"
-
 
 def parenthesis(equat):
     index = 0

@@ -4,14 +4,14 @@ from math_func import ft_pow
 
 class Inconnue:
 
-    nbr = {"0": 0, "1": 0, "2": 0}
-
     def __init__(self, coef, puissance):
+        self.nbr = {"0": 0, "1": 0, "2": 0}
         self.nbr[str(puissance)] = coef
 
     def clone(self):
         clone = Inconnue(0, 0)
-        clone.nbr = self.nbr
+        for key, value in self.nbr.iteritems():
+            clone.nbr[key] = value
         return clone
 
     def add(self, nbr):
@@ -20,8 +20,9 @@ class Inconnue:
             res.nbr["0"] += nbr.nbr
             return res
         if isinstance(nbr, Inconnue):
-            for key, value in nbr.nbr:
+            for key, value in nbr.nbr.iteritems():
                 res.nbr[key] += value
+            return res
 
     def sous(self, nbr, reverse=0):
         res = self.clone()
@@ -30,27 +31,30 @@ class Inconnue:
                 res.nbr["0"] -= nbr.nbr
             else:
                 res.nbr["0"] = nbr.nbr - res.nbr["0"]
+                for key, value in res.nbr.iteritems():
+                    if key != "0" and value != 0:
+                        res.nbr[key] = -value
             return res
         if isinstance(nbr, Inconnue):
             if reverse == 0:
-                for key, value in nbr.nbr:
+                for key, value in nbr.nbr.iteritems():
                     res.nbr[key] -= value
             else:
-                for key, value in nbr.nbr:
+                for key, value in nbr.nbr.iteritems():
                     res.nbr[key] = value - res.nbr[key]
             return res
 
     def mult(self, nbr):
         res = self.clone()
         if isinstance(nbr, Rationels):
-            for key, value in res.nbr:
+            for key, value in res.nbr.iteritems():
                 if value != 0:
                     res.nbr[key] *= nbr.nbr
             return res
         if isinstance(nbr, Inconnue):
-            for key, value in nbr.nbr:
+            for key, value in nbr.nbr.iteritems():
                 if value != 0:
-                    for pow, nbr in res.nbr:
+                    for pow, nbr in res.nbr.iteritems():
                         if nbr != 0:
                             res.nbr[key + pow] += value * nbr
                             res.pow = 0
@@ -60,27 +64,27 @@ class Inconnue:
         res = self.clone()
         if isinstance(nbr, Rationels):
             if reverse == 0:
-                for key, value in res.nbr:
+                for key, value in res.nbr.iteritems():
                     if value != 0:
                         res.nbr[key] /= nbr.nbr
                 return res
             else:
-                for key, value in res.nbr:
+                for key, value in res.nbr.iteritems():
                     if value != 0:
                         res.nbr[key] = nbr.nbr / res.nbr[key]
                 return res
 
             return res
         if isinstance(nbr, Inconnue):
-            for key, value in nbr.nbr:
+            for key, value in nbr.nbr.iteritems():
                 if value != 0:
-                    for pow, nbr in res.nbr:
+                    for pow, nbr in res.nbr.iteritems():
                         if nbr != 0:
                             if reverse == 0:
-                                res.nbr[key - pow] += value / nbr
+                                res.nbr[str(int(key) - int(pow))] += value / nbr
                                 res.nbr[pow] = 0
                             else:
-                                res.nbr[pow - key] += nbr / value
+                                res.nbr[str(int(pow) - int(key))] += nbr / value
                                 res.nbr[pow] = 0
             return res
 
@@ -88,12 +92,14 @@ class Inconnue:
         print "Error can't modulo"
 
     def pow(self, nbr, reverse=0):
-        res = self.clone()
+        res = Inconnue(0, 0)
         if isinstance(nbr, Rationels):
-            if reverse == 0:
-                res.nbr["0"] = ft_pow(res.nbr["0"], nbr.nbr)
+            if reverse == 0 and nbr.nbr > 1:
+                for key, value in self.nbr.iteritems():
+                    if value != 0:
+                        res.nbr[str(int(key) + int(nbr.nbr) - 1)] = value
             else:
-                res.nbr["0"] = ft_pow(nbr.nbr, res.nbr["0"])
+                print("Error can't pow Inconnue")
             return res
         if isinstance(nbr, Inconnue):
             print "Error can't pow Inconnue"

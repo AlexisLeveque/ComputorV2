@@ -65,11 +65,21 @@ def npi(input):
 
 def reduction(equat):
     print("tab")
-    first_part = equat.split('=')[0]
-    tab = to_tab(first_part)
-    shun = shunting_yard(tab)
-    inp = npi(shun)
-    return "8"
+    if equat.count('=') == 0:
+        tab = to_tab(equat)
+        shun = shunting_yard(tab)
+        inp = npi(shun)
+        return "8"
+    else:
+        first_part = equat.split('=')[0]
+        second_part = equat.split('=')[1]
+        tab = to_tab(first_part)
+        shun = shunting_yard(tab)
+        inp = npi(shun)
+        tab2 = to_tab(second_part)
+        shun2 = shunting_yard(tab2)
+        inp2 = npi(shun2)
+        return "8"
 
 def parenthesis(equat):
     index = 0

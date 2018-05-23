@@ -15,4 +15,8 @@ while 1:
     print(input)
     if input == 'quit' or input == 'q' or input == 'exit':
         sys.exit()
-    parsing(input)# try -> catch -> raise
+    try:
+        parsing(input)# try -> catch -> raise
+
+    except:
+        pass

@@ -73,8 +73,6 @@ class Inconnue:
                     if value != 0:
                         res.nbr[key] = nbr.nbr / res.nbr[key]
                 return res
-
-            return res
         if isinstance(nbr, Inconnue):
             for key, value in nbr.nbr.iteritems():
                 if value != 0:
@@ -103,6 +101,9 @@ class Inconnue:
             return res
         if isinstance(nbr, Inconnue):
             print "Error can't pow Inconnue"
+
+    def m_mult(self, nbr):
+        print "Error can't matrice mult"
 
 
 class Function:
@@ -187,6 +188,9 @@ class Rationels:
             return Complex(self.nbr - nbr.r, nbr.i)
         if isinstance(nbr, Matrice):
             return "Error"
+
+    def m_mult(self, nbr):
+        print "Error can't matrice mult"
 
 
 class Complex:
@@ -274,6 +278,9 @@ class Complex:
             return "Error"
         if isinstance(nbr, Matrice):
             return "Error"
+        
+    def m_mult(self, nbr):
+        print "Error can't matrice mult"
 
 
 def calc_mult_matrice(matrice1, matrice2, lign, col, nbr_lign):
@@ -354,20 +361,7 @@ class Matrice:
                 lign_index += 1
             return Matrice(res_matrice, self.lign, self.column)
         if isinstance(nbr, Matrice):
-            rslt_col = self.lign
-            rslt_lign = nbr.column
-            res_matrice = []
-            if self.column != nbr.lign:
-                return "can't multiply matrice"
-            lign_index = 0
-            while lign_index < rslt_lign:
-                res_matrice.append([])
-                col_index = 0
-                while col_index < nbr.column:
-                    res_matrice[lign_index].append(calc_mult_matrice(self.matrice, nbr.matrice, lign_index, col_index, self.column))
-                    col_index += 1
-                lign_index += 1
-            return Matrice(res_matrice, rslt_lign, rslt_col)
+            print "Error"
 
     def div(self, nbr):
         return "Error"
@@ -386,3 +380,22 @@ class Matrice:
             return "Error"
         if isinstance(nbr, Matrice):
             return "Error"
+
+    def m_mult(self, nbr):
+        if isinstance(nbr, Matrice):
+            rslt_col = self.lign
+            rslt_lign = nbr.column
+            res_matrice = []
+            if self.column != nbr.lign:
+                return "Error: can't multiply matrice"
+            lign_index = 0
+            while lign_index < rslt_lign:
+                res_matrice.append([])
+                col_index = 0
+                while col_index < nbr.column:
+                    res_matrice[lign_index].append(calc_mult_matrice(self.matrice, nbr.matrice, lign_index, col_index, self.column))
+                    col_index += 1
+                lign_index += 1
+            return Matrice(res_matrice, rslt_lign, rslt_col)
+        else:
+            print "Error: can't multiply with a matrice"

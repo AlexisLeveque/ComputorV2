@@ -224,7 +224,8 @@ def parsing(input):
     parse_info = parse(input)
     print(variables)
     if parse_info['error'] == True:
-        return "Error"
+        print "Error"
+        raise Exception()
 
     if parse_info['assign_func']:
         assign_func(input, parse_info)

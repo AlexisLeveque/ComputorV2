@@ -8,6 +8,13 @@ class Inconnue:
         self.nbr = {"0": 0, "1": 0, "2": 0}
         self.nbr[str(puissance)] = coef
 
+    def to_str(self):
+        str_nbr = ""
+        for key, value in self.nbr.iteritems():
+            if value != 0:
+                str_nbr = str_nbr + str(value) + "*x^" + key + "+"
+        return str_nbr[:-1]
+
     def clone(self):
         clone = Inconnue(0, 0)
         for key, value in self.nbr.iteritems():
@@ -56,7 +63,7 @@ class Inconnue:
                 if value != 0:
                     for pow, nbr in res.nbr.iteritems():
                         if nbr != 0:
-                            res.nbr[key + pow] += value * nbr
+                            res.nbr[str(int(key) + int(pow))] += value * nbr
                             res.pow = 0
             return res
 

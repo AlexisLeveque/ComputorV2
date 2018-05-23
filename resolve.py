@@ -2,6 +2,7 @@
 import re
 from parse import to_tab, parse, extract_nbr
 from type import Complex, Rationels, Function, Matrice
+from equation_parser import parse_equat
 
 variables = {"rationel": {}, "complexe": {}, "matrices": {}, "function": {}}
 
@@ -194,7 +195,7 @@ def resolve(input):
 
 def resolve_equat(input):
 
-    return 0#appeller mon second degrée auquel il faut rajouter les (8X)
+    parse_equat(input, variables)
 
 
 def assign_func(input, parse_info):

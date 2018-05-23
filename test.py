@@ -31,7 +31,7 @@ if "b" in variables["rationel"]:
 print '----------------------------'
 
 func = '[[2,5,4][4,8,7]]'
-
+print(func[:-1])
 index = 0
 while 1:
     print("while")

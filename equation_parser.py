@@ -1,7 +1,8 @@
 import re
-from resolve import shunting_yard
+import sys
 from type import Rationels, Function, Inconnue
 from parse import extract_var, extract_function, to_tab
+from equation_solver.computor import resolve
 
 
 def types(nbr):
@@ -51,7 +52,7 @@ def calc(nbr1, nbr2, operator):
 def npi(input):
     index = 0
     if len(input) == 1:
-        return input[0]
+        return types(input[0])
     while len(input) > 1:
         if isinstance(input[index], basestring) and re.match(r'^\*\*|[\-+/^%=*]$', input[index]):
             res = calc(input[index-2], input[index-1], input[index])
@@ -64,12 +65,13 @@ def npi(input):
 
 
 def reduction(equat):
+    from resolve import shunting_yard
     print("tab")
     if equat.count('=') == 0:
         tab = to_tab(equat)
         shun = shunting_yard(tab)
         inp = npi(shun)
-        return "8"
+        return inp.to_str()
     else:
         first_part = equat.split('=')[0]
         second_part = equat.split('=')[1]
@@ -79,7 +81,10 @@ def reduction(equat):
         tab2 = to_tab(second_part)
         shun2 = shunting_yard(tab2)
         inp2 = npi(shun2)
-        return "8"
+        inp_str = inp.to_str() if not isinstance(inp, Rationels) else inp.to_str() + "*x^0"
+        inp2_str = inp2.to_str() if not isinstance(inp2, Rationels) else inp2.to_str() + "*x^0"
+        return inp_str + '=' + inp2_str
+
 
 def parenthesis(equat):
     index = 0
@@ -118,25 +123,6 @@ def add_multiplication(input):
             number = False
         index += 1
     return input
-
-
-def add_to_tab(expr,  inverse):
-  print(expr)
-
-
-def move_to_the_same_side(expr):
-    tab = []
-    inverse = False
-    last_sign = 0
-    index = 1
-    while index < len(expr):
-        if expr[index] == '=':
-            inverse = True
-        if expr[index] == '+' or expr[index] == '-' or expr[index] == '=':
-            tab.append(add_to_tab(expr[last_sign: index], inverse))
-            last_sign = index
-        index += 1
-    tab.append(add_to_tab(expr[last_sign: index], inverse))
 
 
 def add_one_before_x(equat):
@@ -189,14 +175,14 @@ def parse_equat(equat, variables):
     r = replace_var(equat, variables)
     simpler = add_multiplication(add_one_before_x(r))
     print(simpler)
-    parenthesis(simpler)
-    same_sided = move_to_the_same_side(simpler)
-    return same_sided
+    res = parenthesis(simpler)
+    resolve(res)
+    return res
 
 
-variables = {"rationel": {"trib": Rationels(21), "ax": Rationels(2)}, "complexe": {}, "matrices": {}, "function": {'f': Function('x^2 + trib', 'x')}}
-print("35x^2+8-25x=ax-trib+x+f(3+5)")
-parse_equat("35x^2+8-25x=ax-trib+x+f(3+5)", variables)
+# variables = {"rationel": {"trib": Rationels(21), "ax": Rationels(2)}, "complexe": {}, "matrices": {}, "function": {'f': Function('x^2 + trib', 'x')}}
+# print("35x^2+8-25x=ax-trib+x+f(3+5)")
+# print(parse_equat("x^2+2x+1=0", variables))
 
 
 # replace var et fonction par leur valeur tant qu'on en a .

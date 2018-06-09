@@ -25,6 +25,9 @@ def extract_function(input):
         if bracket_count == 0:
             break
         index += 1
+    if bracket_count != 0:
+        print "\033[91mError: Wrongly formatted parenthesis\033[0m"
+        raise Exception
     return input[:index + 1]
 
 
@@ -76,10 +79,10 @@ def to_tab(input):
                 token_list.append([4, '('])
                 index += 1
             else:
-                print "can't recognize token near %s" % input[index-3 if index-3 >= 0 else 0:index+2]
-                return "error"
+                print "\033[91mError: Bad token near %s\033[0m" % input[index-3 if index-3 >= 0 else 0:index+2]
+                raise Exception
         else:
-            match = re.match(r'\*\*|[\-+/^%=*]', input[index])
+            match = re.match(r'^\*\*|^[\-+/^%=*]', input[index:])
             if match is not None:
                 token_list.append([0, match.group(0)])
                 index += len(match.group(0))
@@ -93,20 +96,20 @@ def to_tab(input):
                 index += 1
                 nbr = False
             else:
-                print "can't recognize token near %s" % input[index-3 if index-3 >= 0 else 0:index+2]
-                return "error"
-    print('token_list')
-    print(token_list)
+                print "\033[91mError: Bad token near %s\033[0m" % input[index-3 if index-3 >= 0 else 0:index+2]
+                raise Exception
     return token_list
 
 
 def parse(input):
     function_regex = re.compile('^([a-z]+)\((.+)\)=')
-    parse_info = {'assign': False, 'assign_func': False, 'resolve_equat': False, 'error': False}
+    parse_info = {'assign': False, 'assign_func': False, 'resolve_equat': False}
     if not input:
-        parse_info['error'] = True
-        print('Error: Empty input')
-        return parse_info
+        print('\033[91mError: Empty input\033[0m')
+        raise Exception
+    if input.count("=") == 0:
+        print("\033[91mError: No equal\033[0m")
+        raise Exception
     if not input.endswith('?'):
         parse_info['assign'] = True
         match = re.match(function_regex, input)
@@ -115,20 +118,23 @@ def parse(input):
             parse_info['assign_func'] = match.group(1)
             parse_info['var'] = match.group(2)
             if input[len(tmp)] != "=":
-                print("Error: assign")
-                parse_info['error'] = True
+                print("\033[91mError: Something between variable name and =\033[0m")
+                raise Exception
         elif input[0].isalpha():
             tmp = extract_var(input)
+            if tmp == 'i':
+                print "\033[91mError: Can't assign \"i\"\033[0m"
+                raise Exception
             parse_info['assign'] = tmp
-            if input[len(tmp)] != "=":
-                print("Error: assign")
-                parse_info['error'] = True
+            if len(input) == len(tmp) or input[len(tmp)] != "=":
+                print("\033[91mError: Something between variable name and =\033[0m")
+                raise Exception
         else:
-            print("Error assign")
-            parse_info['error'] = True
+            print("\033[91mError: Can't find a variable to assign\033[0m")
+            raise Exception
     elif not input.endswith('=?'):
         parse_info['resolve_equat'] = True
     if input.count("=") > 1:
-        print("Error: more than one equal")
-        parse_info['error'] = True
+        print("\033[91mError: More than one equal\033[0m")
+        raise Exception
     return parse_info

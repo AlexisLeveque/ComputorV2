@@ -30,16 +30,29 @@ if "b" in variables["rationel"]:
 
 print '----------------------------'
 
-func = '[[2,5,4][4,8,7]]'
-print(func[:-1])
-index = 0
-while 1:
-    print("while")
 
-    if 1:
-        print("1")
-        if func[index].isdigit():
-            break
-    index +=1
-func = func.replace(func[3:5], "rotabla")
-print func
+def add_pow(equat):
+    index = 0
+    while index < len(equat):
+        if equat[index] == 'x':
+            if index < len(equat) - 1 and equat[index+1] != "^":
+                equat = equat[:index+1] + "^1" + equat[index+1:]
+            elif index >= len(equat) - 1:
+                equat += "^1"
+        if equat[index].isdigit():
+            if index -1 < 0 or equat[index-1] != '^':
+                while index < len(equat) and (equat[index].isdigit() or equat[index] == "."):
+                    index += 1
+                if index == len(equat) or equat[index] != "*":
+                    equat = equat[:index] + "*x^0" + equat[index:]
+
+        index += 1
+    return equat
+
+
+print(add_pow("3+4*x+5=5*x^2+1*x-2"))
+x= [2, 3, 5]
+print(x[-1])
+print(x.pop())
+print(x[-1])
+print(x.pop())

@@ -21,7 +21,8 @@ def parse_matrice(matrice_str):
             index += 1
         elif matrice_str[index] == ']':
             if column_count + 1 != column:
-                print("Error: Matrice not well field")
+                print "\033[91mError: Matrice not well filled\033[0m"
+                raise Exception
             column_count = 0
             index += 1
         elif matrice_str[index] == ',':
@@ -39,9 +40,11 @@ def parse_matrice(matrice_str):
                 matrice[lign_count - 1].append(nbr)
                 index += i - index
             else:
-                "Error 18"
+                "\033[91mError: Matrice not well filled\033[0m"
+                raise Exception
     if lign_count != lign:
-        print("Error: Matrice not well field")
+        print "\033[91mError: Matrice not well field\033[0m"
+        raise Exception
     return Matrice(matrice, lign, column)
 
 
@@ -53,7 +56,8 @@ def recup_var(var):
     elif var in variables["matrices"]:
         return variables["matrices"][var]
     else:
-        print("Error 13")
+        print "\033[91mError: Variable \"" + var + "\" is not defined\033[0m"
+        raise Exception
 
 
 def resolve_func(func):
@@ -70,7 +74,8 @@ def resolve_func(func):
         return resolve(calcul + '=?')
 
     else:
-        return "Error 22"
+        print "\033[91mError: Function not well formated\033[0m"
+        raise Exception
 
 
 def types(nbr):
@@ -90,7 +95,8 @@ def types(nbr):
     elif re.match(matrice_regex, nbr):
         nbr = parse_matrice(nbr)
     else:
-        print "Error 15"
+        print "\033[91mError: Token not recognized in " + nbr + "\033[0m"
+        raise Exception
     return nbr
 
 
@@ -132,20 +138,16 @@ def greater_precedence(operator1, operator2):
     if operator2 == '(':
         return False
     elif operator1 == '^':
-        return False
-    elif operator1 == '*' and operator2 == '/':
-        return True
-    elif operator1 == '*' or operator1 == '/' or operator1 == '%':
         if operator2 == '^':
             return True
         else:
             return False
-    elif operator1 == '+' and operator2 == '-':
-        return True
-    elif operator1 == '-' or operator1 == '+':
-        if operator2 == '-' or operator2 == '+':
+    elif operator1 == '*' or operator1 == '/' or operator1 == '%' or operator1 == '**':
+        if operator2 == '+' or operator2 == '-':
             return False
         else:
+            return True
+    elif operator1 == '-' or operator1 == '+':
             return True
 
 
@@ -170,11 +172,15 @@ def shunting_yard(tokens):
                 output.append(operator.pop())
                 op_index -= 1
             if not len(operator):
-                print("Error parentesage")
+                print("\033[91mError: Wrongly formatted parenthesis\033[0m")
+                raise Exception
             else:
                 operator.pop()
         index += 1
     while len(operator):
+        if operator[-1] == '(':
+            print("\033[91mError: Wrongly formatted parenthesis\033[0m")
+            raise Exception
         output.append(operator.pop())
     return output
 
@@ -190,20 +196,21 @@ def resolve(input):
         shun = shunting_yard(token_list)
         return npi_solver(shun)
     else:
-        return 'problem'
+        print "\033[91mError: Not an assignation or a calcul\033[0m"
+        raise Exception
 
 
 def resolve_equat(input):
 
-    parse_equat(input, variables)
+    parse_equat(input[:-1], variables)
 
 
 def assign_func(input, parse_info):
     input = re.sub(r'^[a-z]+\((.+)\)=', '', input)
-
+    #if variables[
     if to_tab(input) != 'error':
         variables["function"][parse_info["assign_func"]] = Function(input, parse_info["var"])
-        return input
+        print input
 
 
 def assign_resolve(input, parse_info):
@@ -213,20 +220,19 @@ def assign_resolve(input, parse_info):
         variables["rationel"].pop(var)
     if var in variables["complexe"]:
         variables["complexe"].pop(var)
+    if var in variables["matrices"]:
+        variables["matrices"].pop(var)
     if isinstance(res, Rationels):
         variables["rationel"][var] = res
     if isinstance(res, Complex):
         variables["complexe"][var] = res
-    print(res)
-    return 0
+    if isinstance(res, Matrice):
+        variables["matrices"][var] = res
+    print res
 
 
 def parsing(input):
     parse_info = parse(input)
-    print(variables)
-    if parse_info['error'] == True:
-        print "Error"
-        raise Exception()
 
     if parse_info['assign_func']:
         assign_func(input, parse_info)
@@ -236,9 +242,19 @@ def parsing(input):
         resolve_equat(input)
     else:
         res = resolve(input)
-        print('--------------------------------------------------')
         print res
-        print('--------------------------------------------------')
 
-    # print("parse_info")
-    # print(parse_info)
+
+def print_var():
+    for var in variables["rationel"]:
+        print var + " :"
+        print variables["rationel"][var]
+    for var in variables["complexe"]:
+        print var + " :"
+        print variables["complexe"][var]
+    for var in variables["matrices"]:
+        print var + " :"
+        print variables["matrices"][var]
+    for var in variables["function"]:
+        func = variables["function"][var]
+        print var + "(" + func.var + ") = " + func.func

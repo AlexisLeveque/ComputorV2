@@ -8,7 +8,7 @@ def is_equat(equat):
     match = re.search(regex, equat)
     if match is None or match.group(0) != equat:
         print('\033[91mError: Syntaxe error\033[0m')
-        sys.exit()
+        raise Exception
 
 
 def add_int(equat, index, sign, content):
@@ -73,7 +73,7 @@ def resolve(equat):
             print(rForm)
             print("\033[94mPolynomial degree: %d\033[0m") % (round(key))
             print("\033[91mError : The polynomial degree is stricly greater than 2, I can't solve.\033[0m")
-            sys.exit()
+            raise Exception
 
     eq_tab = reduced_form(eq_tab)
     rForm = "\033[95mReduced form: "

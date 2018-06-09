@@ -23,8 +23,8 @@ def ft_pow(nbr, pow):
     if pow == 1:
         return nbr
     if pow < 0:
-        print "Erreur: negative pow"
-        return None
+        print "\033[91mErreur: negative pow\033[0m"
+        raise Exception
     result = nbr
     while pow > 1:
         result *= nbr

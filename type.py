@@ -11,8 +11,14 @@ class Inconnue:
     def to_str(self):
         str_nbr = ""
         for key, value in self.nbr.iteritems():
-            if value != 0:
+            if value != 0 and key != '1' and key != '0':
                 str_nbr = str_nbr + str(value) + "*x^" + key + "+"
+            if key == '1' and value != 0:
+                str_nbr = str_nbr + str(value) + "*x+"
+            if key == '0' and value != 0:
+                str_nbr = str_nbr + str(value) + "+"
+        if str_nbr == "":
+            return "0"
         return str_nbr[:-1]
 
     def clone(self):
@@ -94,7 +100,8 @@ class Inconnue:
             return res
 
     def mod(self, nbr):
-        print "Error can't modulo"
+        print "\033[91mError: Can't do a modulo in an equation\033[0m"
+        raise Exception
 
     def pow(self, nbr, reverse=0):
         res = Inconnue(0, 0)
@@ -104,13 +111,16 @@ class Inconnue:
                     if value != 0:
                         res.nbr[str(int(key) + int(nbr.nbr) - 1)] = value
             else:
-                print("Error can't pow Inconnue")
+                print("\033[91mError can't elevate to power with an unknown\033[0m")
+                raise Exception
             return res
         if isinstance(nbr, Inconnue):
-            print "Error can't pow Inconnue"
+            print "\033[91mError can't elevate to power with an unknown\033[0m"
+            raise Exception
 
     def m_mult(self, nbr):
-        print "Error can't matrice mult"
+        print "\033[91mError: Can't do a matrice multiplication in an equation\033[0m"
+        raise Exception
 
 
 class Function:
@@ -137,7 +147,8 @@ class Rationels:
         if isinstance(nbr, Complex):
             return Complex(self.nbr + nbr.r, nbr.i)
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: Can't do a add a Rationel and a Matrice\033[0m"
+            raise Exception
 
     def sous(self, nbr):
         if isinstance(nbr, Rationels):
@@ -145,9 +156,10 @@ class Rationels:
             return Rationels(res)
 
         if isinstance(nbr, Complex):
-            return Complex(self.nbr - nbr.r, nbr.i)
+            return Complex(self.nbr - nbr.r, -nbr.i)
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: Can't do a substract a Rationel by a Matrice\033[0m"
+            raise Exception
 
     def mult(self, nbr):
         if isinstance(nbr, Rationels):
@@ -162,13 +174,16 @@ class Rationels:
                 res_matrice.append([])
                 col_index = 0
                 while col_index < nbr.column:
-                    res_matrice[lign_index].append(Rationels(nbr.matrice[lign_index][col_index].mult(self)))
+                    res_matrice[lign_index].append(nbr.matrice[lign_index][col_index].mult(self))
                     col_index += 1
                 lign_index += 1
             return Matrice(res_matrice, nbr.lign, nbr.column)
 
     def div(self, nbr):
         if isinstance(nbr, Rationels):
+            if nbr.nbr == 0:
+                print "\033[91mError: division by zero\033[0m"
+                raise Exception
             res = self.nbr / nbr.nbr
             return Rationels(res)
         if isinstance(nbr, Complex):
@@ -176,28 +191,37 @@ class Rationels:
             bas = nbr.mult(Complex(nbr.r, -nbr.i))
             return haut.div(Rationels(bas.r))
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: Can't divide by a Complexe\033[0m"
+            raise Exception
 
     def mod(self, nbr):
         if isinstance(nbr, Rationels):
+            if nbr.nbr == 0:
+                print "\033[91mError: modulo by zero\033[0m"
+                raise Exception
             res = self.nbr % nbr.nbr
             return Rationels(res)
         if isinstance(nbr, Complex):
-            return "Error"
+            print "\033[91mError: Can't do a modulo with a Complexe\033[0m"
+            raise Exception
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: Can'tdo a modulo with a Matrice\033[0m"
+            raise Exception
 
     def pow(self, nbr):
         if isinstance(nbr, Rationels):
             res = ft_pow(self.nbr, nbr.nbr)
             return Rationels(res)
         if isinstance(nbr, Complex):
-            return Complex(self.nbr - nbr.r, nbr.i)
+            print "\033[91mError: Can't elevate to power with a Complexe\033[0m"
+            raise Exception
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: Can't elevate to power with a Matrice\033[0m"
+            raise Exception
 
     def m_mult(self, nbr):
-        print "Error can't matrice mult"
+        print "\033[91mError: Can't matrice multiply with a Rationel\033[0m"
+        raise Exception
 
 
 class Complex:
@@ -206,13 +230,25 @@ class Complex:
         self.i = imagpart
 
     def __str__(self):
-        str_r = str(self.r)
-        str_i = str(self.i)
+        str_r = str(self.r) if self.r != 0 else None
+        str_i = str(self.i) if self.i != 0 else None
+        if not str_r and not str_i:
+            return '0.0'
+        if not str_r:
+            return str_i + '*i '
+        if not str_i:
+            return str_r
         return str_r + ' + ' + str_i + '*i '
 
     def to_str(self):
-        str_r = str(self.r)
-        str_i = str(self.i)
+        str_r = str(self.r) if self.r != 0 else None
+        str_i = str(self.i) if self.i != 0 else None
+        if not str_r and not str_i:
+            return '0.0'
+        if not str_r:
+            return str_i + '*i '
+        if not str_i:
+            return str_r
         return str_r + ' + ' + str_i + '*i '
 
     def add(self, nbr):
@@ -224,7 +260,8 @@ class Complex:
             i = self.i + nbr.i
             return Complex(r, i)
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: can't substract by a Matrice\033[0m"
+            raise Exception
 
     def sous(self, nbr):
         if isinstance(nbr, Rationels):
@@ -235,7 +272,8 @@ class Complex:
             i = self.i - nbr.i
             return Complex(r, i)
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: can't substract by a Matrice\033[0m"
+            raise Exception
 
     def mult(self, nbr):
         if isinstance(nbr, Rationels):
@@ -243,7 +281,7 @@ class Complex:
             i = self.i * nbr.nbr
             return Complex(r, i)
         if isinstance(nbr, Complex):
-            r = self.r * nbr.r + self.i * nbr.i * -1
+            r = self.r * nbr.r - self.i * nbr.i
             i = self.r * nbr.i + self.i * nbr.r
             return Complex(r, i)
         if isinstance(nbr, Matrice):
@@ -253,13 +291,16 @@ class Complex:
                 res_matrice.append([])
                 col_index = 0
                 while col_index < nbr.column:
-                    res_matrice[lign_index].append(Rationels(nbr.matrice[lign_index][col_index].mult(self)))
+                    res_matrice[lign_index].append(nbr.matrice[lign_index][col_index].mult(self))
                     col_index += 1
                 lign_index += 1
             return Matrice(res_matrice, nbr.lign, nbr.column)
 
     def div(self, nbr):
         if isinstance(nbr, Rationels):
+            if nbr.nbr == 0:
+                print "\033[91mError: Division by zero\033[0m"
+                raise Exception
             r = self.r / nbr.nbr
             i = self.i / nbr.nbr
             return Complex(r, i)
@@ -268,10 +309,12 @@ class Complex:
             bas = Complex(nbr.r, -nbr.i).mult(nbr)
             return haut.div(Rationels(bas.r))
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: Can't split with a Complex\033[0m"
+            raise Exception
 
     def mod(self, nbr):
-        return "Error"
+        print "\033[91mError: Can't do modulo with a Complexe\033[0m"
+        raise Exception
 
     def pow(self, nbr):
         if isinstance(nbr, Rationels):
@@ -282,12 +325,15 @@ class Complex:
                 nbr.nbr -= 1
             return res
         if isinstance(nbr, Complex):
-            return "Error"
+            print "\033[91mError: Can't elevate to power with a Complexe\033[0m"
+            raise Exception
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: Can't elevate to power with a Matrice\033[0m"
+            raise Exception
         
     def m_mult(self, nbr):
-        print "Error can't matrice mult"
+        print "\033[91mError: Can't matrice multiply with a Complex\033[0m"
+        raise Exception
 
 
 def calc_mult_matrice(matrice1, matrice2, lign, col, nbr_lign):
@@ -307,24 +353,26 @@ class Matrice:
 
     def __str__(self):
         lign_index = 0
+        str = ""
         while lign_index < self.lign:
             col_index = 0
-            print '[',
+            str += '['
             while col_index < self.column:
-                print " ",
-                print self.matrice[lign_index][col_index].to_str(),
-                print " ",
+                str += " "
+                str += self.matrice[lign_index][col_index].to_str()
+                str += " "
                 col_index += 1
                 if col_index < self.column:
-                    print ",",
-            print ']'
+                    str += ","
+            str += ']\n'
             lign_index += 1
-        return ''
+        return str[:-1]
 
     def add(self, nbr):
         if isinstance(nbr, Matrice):
             if self.column != nbr.column or self.lign != nbr.lign:
-                return "Can't add matrices"
+                print "\033[91mError: Matrices need to have same size to be added\033[0m"
+                raise Exception
             res_matrice = []
             lign_index = 0
             while lign_index < nbr.lign:
@@ -336,12 +384,14 @@ class Matrice:
                 lign_index += 1
             return Matrice(res_matrice, self.lign, self.column)
         else:
-            return "Error"
+            print "\033[91mError: Can't do a simple addition on a Matrice\033[0m"
+            raise Exception
 
     def sous(self, nbr):
         if isinstance(nbr, Matrice):
             if self.column != nbr.column or self.lign != nbr.lign:
-                return "Can't sous matrices"
+                print "\033[91mError: Matrices need to have same size to be substract\033[0m"
+                raise Exception
             res_matrice = []
             lign_index = 0
             while lign_index < nbr.lign:
@@ -353,7 +403,8 @@ class Matrice:
                 lign_index += 1
             return Matrice(res_matrice, self.lign, self.column)
         else:
-            return "Error"
+            print "\033[91mError: Can't do a simple substraction on a Matrice\033[0m"
+            raise Exception
 
     def mult(self, nbr):
         if isinstance(nbr, Rationels) or isinstance(nbr, Complex):
@@ -363,18 +414,21 @@ class Matrice:
                 res_matrice.append([])
                 col_index = 0
                 while col_index < self.column:
-                    res_matrice[lign_index].append(Rationels(self.matrice[lign_index][col_index].mult(nbr)))
+                    res_matrice[lign_index].append(self.matrice[lign_index][col_index].mult(nbr))
                     col_index += 1
                 lign_index += 1
             return Matrice(res_matrice, self.lign, self.column)
         if isinstance(nbr, Matrice):
-            print "Error"
+            print "\033[91mError: Can't multiply a Matrice with a Matrice use matrice multiplication instead\033[0m"
+            raise Exception
 
     def div(self, nbr):
-        return "Error"
+        print "\033[91mError: Can't do a division on a Matrice\033[0m"
+        raise Exception
 
     def mod(self, nbr):
-        return "Error"
+        print "\033[91mError: Can't do a modulo on a Matrice\033[0m"
+        raise Exception
 
     def pow(self, nbr):
         if isinstance(nbr, Rationels):
@@ -384,9 +438,12 @@ class Matrice:
                 nbr.nbr -= 1
             return res
         if isinstance(nbr, Complex):
-            return "Error"
+            print "\033[91mError: Can't elevate to power with a Complexe\033[0m"
+            raise Exception
+
         if isinstance(nbr, Matrice):
-            return "Error"
+            print "\033[91mError: Can't elevate to power with a Matrice\033[0m"
+            raise Exception
 
     def m_mult(self, nbr):
         if isinstance(nbr, Matrice):
@@ -394,7 +451,8 @@ class Matrice:
             rslt_lign = nbr.column
             res_matrice = []
             if self.column != nbr.lign:
-                return "Error: can't multiply matrice"
+                print "\033[91mError: Can't multiply matrice because size don't match\033[91m"
+                raise Exception
             lign_index = 0
             while lign_index < rslt_lign:
                 res_matrice.append([])
@@ -405,4 +463,5 @@ class Matrice:
                 lign_index += 1
             return Matrice(res_matrice, rslt_lign, rslt_col)
         else:
-            print "Error: can't multiply with a matrice"
+            print "\033[91mError: Can't use matrice multiplication with a Real or Complex\033[0m"
+            raise Exception
